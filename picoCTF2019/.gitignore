@@ -1,1 +1,10 @@
 .vscode
+
+# executable
+core
+
+# ida64
+input.txt
+*.id*
+*.nam
+*.til
