@@ -23,6 +23,6 @@ arg2
 
 - - - -
 ### TODO:
-- Figure out how to properly pass the arguments
-- Is there a way to reset the stack pointer? Is mine off?
-- I fail at the fgets() function
+- Figure out why the stack needed to be set up the way that it was.
+
+picoCTF{arg5_and_r3turn55897b905}
