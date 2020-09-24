@@ -12,6 +12,7 @@
 
 https://ctf.hackthemachine.ai/challenges#Time%20Recorder-17
 http://ctf-chals.hackthemachine.ai:33632/
+https://ctf101.org/web-exploitation/overview/
 
 
 - - - -
